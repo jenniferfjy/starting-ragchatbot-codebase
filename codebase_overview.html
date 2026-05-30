@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codebase Overview — Course Materials RAG System</title>
+<style>
+  :root {
+    --bg: #faf9f5;
+    --bg-soft: #f5f3ec;
+    --card: #ffffff;
+    --text: #1f1e1c;
+    --text-soft: #3d3a36;
+    --muted: #8a8780;
+    --border: #e8e4dd;
+    --accent: #c96442;
+    --accent-soft: #f4ddd2;
+    --accent-hover: #b35636;
+    --code-bg: #f5f3ec;
+    --good: #5a7a4f;
+    --good-bg: #eaf0e4;
+    --warn: #a06b1f;
+    --warn-bg: #f5eada;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: ui-serif, "Charter", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  .layout { display: flex; max-width: 1400px; margin: 0 auto; }
+
+  /* Sidebar nav */
+  nav.toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 240px;
+    padding: 40px 20px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  nav.toc .toc-title {
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  nav.toc a {
+    display: block;
+    padding: 6px 10px;
+    color: var(--text-soft);
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: all 0.15s;
+  }
+  nav.toc a:hover { background: var(--bg-soft); color: var(--accent); }
+
+  main {
+    flex: 1;
+    padding: 60px 60px 100px;
+    max-width: 900px;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 2.6em;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-size: 1.7em;
+    font-weight: 600;
+    margin-top: 56px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  h4 { font-size: 1.05em; margin: 0 0 6px; font-weight: 600; }
+  p { margin: 0 0 16px; color: var(--text-soft); }
+  .lede { font-size: 1.15em; color: var(--text-soft); }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", "Menlo", "Monaco", monospace;
+    font-size: 0.88em;
+    color: var(--accent);
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 18px 22px;
+    border-radius: 10px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    font-family: "SF Mono", "Menlo", "Monaco", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  pre code { background: none; padding: 0; color: var(--text); font-size: inherit; }
+
+  /* Header */
+  header.hero {
+    padding: 60px 0 30px;
+  }
+  .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .badges { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-soft);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+  .pitch {
+    background: var(--accent-soft);
+    border: 1px solid #ecc8b8;
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin: 24px 0;
+  }
+  .pitch p { color: var(--text); margin: 0 0 8px; }
+  .pitch p:last-child { margin-bottom: 0; }
+  .pitch strong { color: var(--accent); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-soft);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tbody tr:hover { background: var(--bg-soft); }
+
+  /* ASCII diagram */
+  .diagram {
+    background: var(--code-bg);
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-family: "SF Mono", "Menlo", "Monaco", monospace;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.4;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* Grid of file cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .file-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: all 0.15s;
+  }
+  .file-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201, 100, 66, 0.08);
+  }
+  .file-card .icon { font-size: 1.5em; margin-bottom: 8px; }
+  .file-card h4 { color: var(--accent); margin-bottom: 6px; font-family: "SF Mono", monospace; font-size: 0.95em; }
+  .file-card p { margin: 0; font-size: 14px; color: var(--text-soft); }
+
+  /* Steps */
+  .step {
+    display: flex;
+    gap: 18px;
+    margin: 14px 0;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .step-num {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { color: var(--text); }
+  .step-body .where {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: "SF Mono", monospace;
+    margin-top: 4px;
+  }
+
+  /* Glossary */
+  .glossary-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 10px 0;
+  }
+  .glossary-item .term {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 1em;
+    font-family: -apple-system, sans-serif;
+  }
+  .glossary-item .def { color: var(--text-soft); margin-top: 4px; font-size: 15px; }
+
+  /* Callouts */
+  .callout {
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 15px;
+    border-left: 4px solid;
+  }
+  .callout.tip { background: var(--good-bg); border-color: var(--good); color: #2f4a26; }
+  .callout.warn { background: var(--warn-bg); border-color: var(--warn); color: #5c3f12; }
+  .callout strong { font-weight: 600; }
+
+  /* Detail technical lists */
+  ul.tight { padding-left: 22px; margin: 8px 0 16px; }
+  ul.tight li { margin: 4px 0; color: var(--text-soft); }
+
+  /* File reference */
+  .fileref {
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 0.85em;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    font-family: -apple-system, sans-serif;
+  }
+
+  @media (max-width: 900px) {
+    nav.toc { display: none; }
+    main { padding: 30px 24px 80px; }
+    h1 { font-size: 2em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <a href="#what">What it does</a>
+    <a href="#stack">Tech stack</a>
+    <a href="#picture">Big picture</a>
+    <a href="#sequence">Request flow diagram</a>
+    <a href="#layout">Project layout</a>
+    <a href="#backend">Backend modules</a>
+    <a href="#frontend">Frontend</a>
+    <a href="#flow">Request flow</a>
+    <a href="#config">Configuration</a>
+    <a href="#endpoints">API endpoints</a>
+    <a href="#concepts">Key concepts</a>
+    <a href="#notable">Notable details</a>
+    <a href="#run">How to run</a>
+  </nav>
+
+  <main>
+
+    <header class="hero">
+      <div class="eyebrow">Codebase Overview</div>
+      <h1>Course Materials RAG System</h1>
+      <p class="lede">A full-stack Retrieval-Augmented Generation app that answers questions about course materials using ChromaDB for vector search and Anthropic Claude for response generation.</p>
+      <div class="badges">
+        <span class="badge">Python 3.13</span>
+        <span class="badge">FastAPI</span>
+        <span class="badge">Claude (Anthropic)</span>
+        <span class="badge">ChromaDB</span>
+        <span class="badge">sentence-transformers</span>
+        <span class="badge">Vanilla JS</span>
+        <span class="badge">uv</span>
+      </div>
+    </header>
+
+    <section id="what">
+      <h2>What this app does</h2>
+      <div class="pitch">
+        <p><strong>In one sentence:</strong> You ask a question about a course → the app finds the most relevant passages from the course material → Claude writes a sourced answer.</p>
+        <p><strong>RAG</strong> = <strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration. Instead of asking the AI to answer purely from its training memory, we first <em>retrieve</em> real text from a database, then ask the AI to answer <em>using that text</em> — much more accurate and verifiable.</p>
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2>Tech stack</h2>
+      <table>
+        <thead><tr><th>Layer</th><th>Choice</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Language</td><td>Python 3.13</td><td>Pinned in <code>.python-version</code></td></tr>
+          <tr><td>Web framework</td><td>FastAPI 0.116 + Uvicorn 0.35</td><td>Auto OpenAPI docs at <code>/docs</code></td></tr>
+          <tr><td>Vector database</td><td>ChromaDB 1.0.15</td><td>Persistent, local at <code>./chroma_db</code></td></tr>
+          <tr><td>Embeddings</td><td>sentence-transformers 5.0</td><td>Model: <code>all-MiniLM-L6-v2</code></td></tr>
+          <tr><td>LLM</td><td>Anthropic Claude</td><td>Model: <code>claude-sonnet-4-20250514</code>, called with tool use</td></tr>
+          <tr><td>Frontend</td><td>Vanilla HTML/CSS/JS</td><td>Single page, served as static files by FastAPI</td></tr>
+          <tr><td>Package manager</td><td>uv</td><td>Lockfile <code>uv.lock</code> in repo</td></tr>
+          <tr><td>Config</td><td>python-dotenv 1.1.1</td><td>Reads <code>.env</code> for the API key</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="picture">
+      <h2>The big picture</h2>
+      <div class="diagram">   👤 USER
+     │  "What is lesson 5 about?"
+     ▼
+  ┌─────────────────┐
+  │  🖥️  FRONTEND    │   index.html + script.js
+  │  (the chat UI)  │
+  └────────┬────────┘
+           │ HTTP POST /api/query
+           ▼
+  ┌─────────────────┐
+  │  ⚙️  BACKEND     │   FastAPI (app.py)
+  │  (the brain)    │
+  └────────┬────────┘
+           │
+           ▼
+  ┌─────────────────┐      ┌──────────────────┐
+  │ 🤖 CLAUDE AI    │◄────►│ 🔍 SEARCH TOOL    │
+  │ (writes reply)  │      │ (finds snippets)  │
+  └─────────────────┘      └────────┬─────────┘
+                                    │
+                                    ▼
+                           ┌──────────────────┐
+                           │ 💾 ChromaDB       │
+                           │ (vector database) │
+                           └──────────────────┘</div>
+    </section>
+
+    <section id="sequence">
+      <h2>Request flow diagram</h2>
+      <p>Each column is a real piece of the system (a "lifeline"). The numbered arrows show exactly what happens, in order, when you ask a question. <strong>Solid orange</strong> arrows are forward requests; <strong>dashed grey</strong> arrows are responses returning back.</p>
+
+      <div class="card" style="padding: 24px; overflow-x: auto;">
+        <svg viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg"
+             style="min-width: 760px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+          <defs>
+            <marker id="arrowF" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#c96442"/>
+            </marker>
+            <marker id="arrowR" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a8780"/>
+            </marker>
+          </defs>
+
+          <!-- Actor 1: User @ x=130 -->
+          <rect x="70" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="130" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">👤 User</text>
+          <text x="130" y="60" text-anchor="middle" font-size="11" fill="#8a8780">browser</text>
+          <line x1="130" y1="70" x2="130" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Actor 2: Frontend @ x=270 -->
+          <rect x="210" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="270" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">🖥️ Frontend</text>
+          <text x="270" y="60" text-anchor="middle" font-size="11" fill="#8a8780">script.js</text>
+          <line x1="270" y1="70" x2="270" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Actor 3: Backend @ x=410 -->
+          <rect x="350" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="410" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">⚙️ Backend</text>
+          <text x="410" y="60" text-anchor="middle" font-size="11" fill="#8a8780">app.py + rag</text>
+          <line x1="410" y1="70" x2="410" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Actor 4: Session @ x=550 -->
+          <rect x="490" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="550" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">💬 Session</text>
+          <text x="550" y="60" text-anchor="middle" font-size="11" fill="#8a8780">chat history</text>
+          <line x1="550" y1="70" x2="550" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Actor 5: Claude @ x=690 -->
+          <rect x="630" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="690" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">🤖 Claude</text>
+          <text x="690" y="60" text-anchor="middle" font-size="11" fill="#8a8780">Anthropic API</text>
+          <line x1="690" y1="70" x2="690" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Actor 6: Vector DB @ x=830 -->
+          <rect x="770" y="20" width="120" height="50" rx="10" fill="white" stroke="#e8e4dd" stroke-width="1.5"/>
+          <text x="830" y="43" text-anchor="middle" font-size="14" font-weight="600" fill="#1f1e1c">💾 Vector DB</text>
+          <text x="830" y="60" text-anchor="middle" font-size="11" fill="#8a8780">ChromaDB</text>
+          <line x1="830" y1="70" x2="830" y2="665" stroke="#d4cfc4" stroke-width="1" stroke-dasharray="4,4"/>
+
+          <!-- Step 1: User → Frontend @ y=110 -->
+          <circle cx="30" cy="110" r="12" fill="#c96442"/>
+          <text x="30" y="114" text-anchor="middle" font-size="11" font-weight="600" fill="white">1</text>
+          <text x="200" y="103" text-anchor="middle" font-size="11" fill="#3d3a36">types question</text>
+          <line x1="130" y1="110" x2="270" y2="110" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 2: Frontend → Backend @ y=155 -->
+          <circle cx="30" cy="155" r="12" fill="#c96442"/>
+          <text x="30" y="159" text-anchor="middle" font-size="11" font-weight="600" fill="white">2</text>
+          <text x="340" y="148" text-anchor="middle" font-size="11" fill="#3d3a36">POST /api/query</text>
+          <line x1="270" y1="155" x2="410" y2="155" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 3: Backend → Session @ y=200 -->
+          <circle cx="30" cy="200" r="12" fill="#c96442"/>
+          <text x="30" y="204" text-anchor="middle" font-size="11" font-weight="600" fill="white">3</text>
+          <text x="480" y="193" text-anchor="middle" font-size="11" fill="#3d3a36">get_conversation_history()</text>
+          <line x1="410" y1="200" x2="550" y2="200" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 4: Session → Backend @ y=245 -->
+          <circle cx="30" cy="245" r="12" fill="#8a8780"/>
+          <text x="30" y="249" text-anchor="middle" font-size="11" font-weight="600" fill="white">4</text>
+          <text x="480" y="238" text-anchor="middle" font-size="11" fill="#8a8780">past messages</text>
+          <line x1="550" y1="245" x2="410" y2="245" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+
+          <!-- Step 5: Backend → Claude @ y=290 -->
+          <circle cx="30" cy="290" r="12" fill="#c96442"/>
+          <text x="30" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="white">5</text>
+          <text x="550" y="283" text-anchor="middle" font-size="11" fill="#3d3a36">messages.create() — with search tool</text>
+          <line x1="410" y1="290" x2="690" y2="290" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 6: Claude → Backend @ y=335 -->
+          <circle cx="30" cy="335" r="12" fill="#c96442"/>
+          <text x="30" y="339" text-anchor="middle" font-size="11" font-weight="600" fill="white">6</text>
+          <text x="550" y="328" text-anchor="middle" font-size="11" fill="#3d3a36">tool_use: search_course_content(...)</text>
+          <line x1="690" y1="335" x2="410" y2="335" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 7: Backend → Vector DB @ y=380 -->
+          <circle cx="30" cy="380" r="12" fill="#c96442"/>
+          <text x="30" y="384" text-anchor="middle" font-size="11" font-weight="600" fill="white">7</text>
+          <text x="620" y="373" text-anchor="middle" font-size="11" fill="#3d3a36">resolve course name + semantic search</text>
+          <line x1="410" y1="380" x2="830" y2="380" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 8: Vector DB → Backend @ y=425 -->
+          <circle cx="30" cy="425" r="12" fill="#8a8780"/>
+          <text x="30" y="429" text-anchor="middle" font-size="11" font-weight="600" fill="white">8</text>
+          <text x="620" y="418" text-anchor="middle" font-size="11" fill="#8a8780">top-5 chunks + metadata</text>
+          <line x1="830" y1="425" x2="410" y2="425" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+
+          <!-- Step 9: Backend → Claude @ y=470 -->
+          <circle cx="30" cy="470" r="12" fill="#c96442"/>
+          <text x="30" y="474" text-anchor="middle" font-size="11" font-weight="600" fill="white">9</text>
+          <text x="550" y="463" text-anchor="middle" font-size="11" fill="#3d3a36">tool_result (this call has no tools)</text>
+          <line x1="410" y1="470" x2="690" y2="470" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 10: Claude → Backend @ y=515 -->
+          <circle cx="30" cy="515" r="12" fill="#8a8780"/>
+          <text x="30" y="519" text-anchor="middle" font-size="11" font-weight="600" fill="white">10</text>
+          <text x="550" y="508" text-anchor="middle" font-size="11" fill="#8a8780">final answer text</text>
+          <line x1="690" y1="515" x2="410" y2="515" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+
+          <!-- Step 11: Backend → Session @ y=560 -->
+          <circle cx="30" cy="560" r="12" fill="#c96442"/>
+          <text x="30" y="564" text-anchor="middle" font-size="11" font-weight="600" fill="white">11</text>
+          <text x="480" y="553" text-anchor="middle" font-size="11" fill="#3d3a36">add_exchange(Q, A)</text>
+          <line x1="410" y1="560" x2="550" y2="560" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+
+          <!-- Step 12: Backend → Frontend @ y=605 -->
+          <circle cx="30" cy="605" r="12" fill="#8a8780"/>
+          <text x="30" y="609" text-anchor="middle" font-size="11" font-weight="600" fill="white">12</text>
+          <text x="340" y="598" text-anchor="middle" font-size="11" fill="#8a8780">{answer, sources, session_id}</text>
+          <line x1="410" y1="605" x2="270" y2="605" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+
+          <!-- Step 13: Frontend → User @ y=650 -->
+          <circle cx="30" cy="650" r="12" fill="#8a8780"/>
+          <text x="30" y="654" text-anchor="middle" font-size="11" font-weight="600" fill="white">13</text>
+          <text x="200" y="643" text-anchor="middle" font-size="11" fill="#8a8780">render answer + sources</text>
+          <line x1="270" y1="650" x2="130" y2="650" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+
+          <!-- Legend -->
+          <g transform="translate(70, 695)">
+            <line x1="0" y1="0" x2="30" y2="0" stroke="#c96442" stroke-width="1.5" marker-end="url(#arrowF)"/>
+            <text x="38" y="4" font-size="11" fill="#3d3a36">request / forward call</text>
+            <line x1="200" y1="0" x2="230" y2="0" stroke="#8a8780" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrowR)"/>
+            <text x="238" y="4" font-size="11" fill="#8a8780">response / return value</text>
+          </g>
+
+        </svg>
+      </div>
+
+      <h3>What each phase is doing</h3>
+      <table>
+        <thead><tr><th>Steps</th><th>Phase</th><th>What's happening</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1–2</strong></td><td>Capture</td><td>User types in the chat box; browser POSTs the question.</td></tr>
+          <tr><td><strong>3–4</strong></td><td>Memory lookup</td><td>Backend pulls the last 2 exchanges from the in-memory session store to give Claude context.</td></tr>
+          <tr><td><strong>5–6</strong></td><td>First Claude call</td><td>Claude sees the question + history + an available <code>search_course_content</code> tool — and decides to search.</td></tr>
+          <tr><td><strong>7–8</strong></td><td>Database search</td><td>Search tool resolves a possibly-partial course name against the <code>course_catalog</code>, then queries <code>course_content</code> for the top 5 most relevant chunks.</td></tr>
+          <tr><td><strong>9–10</strong></td><td>Second Claude call</td><td>Tool results sent back to Claude (no tools this time, so it must answer). Claude writes the final response.</td></tr>
+          <tr><td><strong>11</strong></td><td>Memory save</td><td>The new Q+A is appended to session history for next time.</td></tr>
+          <tr><td><strong>12–13</strong></td><td>Render</td><td>JSON returned to the browser; the chat UI displays the answer with its sources.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <strong>💡 Why two Claude calls?</strong> Claude needs to see the search results before it can write an answer. The first call decides <em>"I need to search"</em>; the second call writes the actual answer using what was found. This is how Anthropic's tool use works.
+      </div>
+    </section>
+
+    <section id="layout">
+      <h2>Project layout</h2>
+      <pre><code>starting-ragchatbot-codebase/
+├── backend/           # FastAPI app + RAG components (9 Python files)
+├── frontend/          # index.html, script.js, style.css (single-page UI)
+├── docs/              # Course transcripts (course1_script.txt … course4_script.txt)
+├── main.py            # Unused stub ("Hello from starting-codebase!")
+├── run.sh             # Launcher (cd backend &amp;&amp; uvicorn app:app --reload)
+├── pyproject.toml     # Dependencies
+├── uv.lock            # Locked versions
+├── .env.example       # Template for ANTHROPIC_API_KEY
+└── README.md          # Setup + run instructions</code></pre>
+
+      <h3>What each top-level folder is for</h3>
+      <table>
+        <thead><tr><th>Path</th><th>Contents</th><th>Mental model</th></tr></thead>
+        <tbody>
+          <tr><td><code>backend/</code></td><td>All Python logic</td><td>🧠 The brain</td></tr>
+          <tr><td><code>frontend/</code></td><td>HTML, CSS, JavaScript</td><td>👀 The face</td></tr>
+          <tr><td><code>docs/</code></td><td>Course transcripts (.txt)</td><td>📚 The books</td></tr>
+          <tr><td><code>run.sh</code></td><td>One-command launcher</td><td>🚀 The launch button</td></tr>
+          <tr><td><code>pyproject.toml</code></td><td>List of required libraries</td><td>🛒 The shopping list</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="backend">
+      <h2>Backend modules</h2>
+      <p>Nine files under <code>backend/</code>. Here they are at a glance, then deep-dive details below.</p>
+
+      <div class="grid">
+
+        <div class="file-card">
+          <div class="icon">🚪</div>
+          <h4>app.py</h4>
+          <p><b>The front door.</b> Starts the FastAPI server, exposes 2 endpoints, ingests docs on startup, mounts the frontend.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">⚙️</div>
+          <h4>config.py</h4>
+          <p><b>Settings panel.</b> Chunk size, overlap, max results, max history, API key, model.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">🎭</div>
+          <h4>rag_system.py</h4>
+          <p><b>The conductor.</b> Orchestrates every other component in the right order.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">📖</div>
+          <h4>document_processor.py</h4>
+          <p><b>The librarian.</b> Parses course files and chops them into searchable chunks with overlap.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">💾</div>
+          <h4>vector_store.py</h4>
+          <p><b>Smart filing cabinet.</b> Wraps ChromaDB. Two collections: course catalog + content chunks.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">🤖</div>
+          <h4>ai_generator.py</h4>
+          <p><b>Claude connector.</b> Talks to Anthropic's API. Handles the tool-use back-and-forth.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">🔍</div>
+          <h4>search_tools.py</h4>
+          <p><b>Search function for Claude.</b> Defines the <code>search_course_content</code> tool and a tool manager.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">💬</div>
+          <h4>session_manager.py</h4>
+          <p><b>Short-term memory.</b> In-memory chat history, last 2 exchanges per session.</p>
+        </div>
+
+        <div class="file-card">
+          <div class="icon">📦</div>
+          <h4>models.py</h4>
+          <p><b>Data shapes.</b> Pydantic models: <code>Course</code>, <code>Lesson</code>, <code>CourseChunk</code>.</p>
+        </div>
+
+      </div>
+
+      <h3>app.py <span class="fileref">— backend/app.py</span></h3>
+      <ul class="tight">
+        <li>FastAPI entrypoint. Title: <em>"Course Materials RAG System"</em>.</li>
+        <li>Adds <code>TrustedHostMiddleware</code> (<code>allowed_hosts=["*"]</code>) and CORS (<code>allow_origins=["*"]</code>) for proxy compatibility.</li>
+        <li>Instantiates a single global <code>RAGSystem(config)</code>.</li>
+        <li>Exposes two endpoints: <code>POST /api/query</code> and <code>GET /api/courses</code>.</li>
+        <li><code>@app.on_event("startup")</code>: calls <code>rag_system.add_course_folder("../docs", clear_existing=False)</code>.</li>
+        <li>Custom <code>DevStaticFiles</code> adds no-cache headers so frontend edits show immediately during development.</li>
+        <li>Mounts <code>../frontend</code> at <code>/</code> as the static root.</li>
+      </ul>
+
+      <h3>config.py <span class="fileref">— backend/config.py</span></h3>
+      <p>A single <code>@dataclass Config</code> instance exported as <code>config</code>:</p>
+      <table>
+        <thead><tr><th>Setting</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>ANTHROPIC_API_KEY</code></td><td>from env</td><td>Loaded via <code>python-dotenv</code></td></tr>
+          <tr><td><code>ANTHROPIC_MODEL</code></td><td><code>claude-sonnet-4-20250514</code></td><td>Which Claude model to call</td></tr>
+          <tr><td><code>EMBEDDING_MODEL</code></td><td><code>all-MiniLM-L6-v2</code></td><td>Sentence-transformers model</td></tr>
+          <tr><td><code>CHUNK_SIZE</code></td><td>800</td><td>Target character size per chunk</td></tr>
+          <tr><td><code>CHUNK_OVERLAP</code></td><td>100</td><td>Characters shared between adjacent chunks</td></tr>
+          <tr><td><code>MAX_RESULTS</code></td><td>5</td><td>Top-K returned from vector search</td></tr>
+          <tr><td><code>MAX_HISTORY</code></td><td>2</td><td>Number of exchanges remembered</td></tr>
+          <tr><td><code>CHROMA_PATH</code></td><td><code>./chroma_db</code></td><td>Local persistent DB folder</td></tr>
+        </tbody>
+      </table>
+
+      <h3>rag_system.py <span class="fileref">— backend/rag_system.py</span></h3>
+      <ul class="tight">
+        <li>Doesn't do work itself — wires <em>everyone else</em> together.</li>
+        <li>Constructor builds: <code>DocumentProcessor</code>, <code>VectorStore</code>, <code>AIGenerator</code>, <code>SessionManager</code>, <code>ToolManager</code>, and registers <code>CourseSearchTool</code>.</li>
+        <li><code>add_course_document(path)</code> → processes one file, adds metadata + chunks to the store.</li>
+        <li><code>add_course_folder(path, clear_existing=False)</code> → batch ingests a directory; skips courses whose title is already in the catalog.</li>
+        <li><code>query(query, session_id?)</code>:
+          <ul>
+            <li>Builds prompt: <code>"Answer this question about course materials: {query}"</code></li>
+            <li>Pulls conversation history from session manager (if session exists)</li>
+            <li>Calls <code>ai_generator.generate_response(...)</code> with tools</li>
+            <li>Reads <code>tool_manager.get_last_sources()</code>, resets them</li>
+            <li>Appends the exchange to session history</li>
+            <li>Returns <code>(answer, sources)</code></li>
+          </ul>
+        </li>
+        <li><code>get_course_analytics()</code> → returns <code>{total_courses, course_titles}</code> for the sidebar.</li>
+      </ul>
+
+      <h3>document_processor.py <span class="fileref">— backend/document_processor.py</span></h3>
+      <p>Expects course files in this format:</p>
+      <pre><code>Course Title: Intro to MCP
+Course Link: https://...
+Course Instructor: Jane Doe
+
+Lesson 1: Getting Started
+Lesson Link: https://...
+[lesson content...]
+
+Lesson 2: Advanced Topics
+[lesson content...]</code></pre>
+      <ul class="tight">
+        <li><code>read_file(path)</code> — UTF-8 read with fallback to <code>errors="ignore"</code>.</li>
+        <li><code>chunk_text(text)</code> — sentence-aware splitter using a regex that handles abbreviations; greedy packs sentences up to <code>chunk_size</code>; carries back enough sentences to fill <code>chunk_overlap</code>.</li>
+        <li><code>process_course_document(path)</code> — parses the 3-line header, walks lines detecting <code>Lesson N: …</code> markers and optional <code>Lesson Link:</code> lines, produces a <code>Course</code> + list of <code>CourseChunk</code>.</li>
+        <li>First chunk of each lesson is prefixed: <code>"Lesson {N} content: ..."</code> so the chunk carries its context into embeddings.</li>
+      </ul>
+
+      <h3>vector_store.py <span class="fileref">— backend/vector_store.py</span></h3>
+      <p>Wraps ChromaDB with two collections:</p>
+      <table>
+        <thead><tr><th>Collection</th><th>Holds</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td><code>course_catalog</code></td><td>Course titles + JSON-serialized lesson metadata</td><td>Resolving partial course names ("MCP" → full title)</td></tr>
+          <tr><td><code>course_content</code></td><td>Text chunks with metadata (course_title, lesson_number, chunk_index)</td><td>The actual semantic search</td></tr>
+        </tbody>
+      </table>
+      <ul class="tight">
+        <li><code>search(query, course_name?, lesson_number?, limit?)</code> — 3 steps: resolve course name via catalog vector search, build Chroma filter, run content query.</li>
+        <li><code>_resolve_course_name(name)</code> — queries the catalog for top-1 match; returns the resolved title.</li>
+        <li><code>_build_filter(...)</code> — composes <code>$and</code> filter for combined course+lesson, or single-field filter otherwise.</li>
+        <li><code>add_course_metadata(course)</code> — uses the title as the Chroma <em>ID</em> and stores lessons as JSON in metadata.</li>
+        <li><code>add_course_content(chunks)</code> — IDs are <code>{title_with_underscores}_{chunk_index}</code>.</li>
+        <li>Helpers: <code>clear_all_data</code>, <code>get_existing_course_titles</code>, <code>get_course_count</code>, <code>get_all_courses_metadata</code>, <code>get_course_link</code>, <code>get_lesson_link</code>.</li>
+        <li>Embedding function: <code>SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")</code>.</li>
+      </ul>
+
+      <h3>ai_generator.py <span class="fileref">— backend/ai_generator.py</span></h3>
+      <ul class="tight">
+        <li>Static <code>SYSTEM_PROMPT</code> constrains Claude: <em>"One search per query maximum"</em>, no meta-commentary, brief educational answers.</li>
+        <li>Base API params: <code>temperature=0</code>, <code>max_tokens=800</code>.</li>
+        <li><code>generate_response(query, conversation_history?, tools?, tool_manager?)</code>:
+          <ul>
+            <li>Builds <code>system</code> by appending history if present</li>
+            <li>If <code>tools</code> provided, passes <code>tool_choice={"type": "auto"}</code></li>
+            <li>If response has <code>stop_reason == "tool_use"</code>, calls <code>_handle_tool_execution</code></li>
+          </ul>
+        </li>
+        <li><code>_handle_tool_execution(...)</code> — appends the assistant tool-use turn, runs each tool, appends results as a user message containing <code>tool_result</code> blocks, then re-calls the API <em>without</em> tools to get the final text answer.</li>
+      </ul>
+
+      <h3>search_tools.py <span class="fileref">— backend/search_tools.py</span></h3>
+      <ul class="tight">
+        <li>Abstract <code>Tool</code> class with <code>get_tool_definition()</code> + <code>execute(**kwargs)</code>.</li>
+        <li><code>CourseSearchTool</code> exposes this Claude tool:
+<pre><code>search_course_content(
+   query:         "what to look for",
+   course_name:   "optional — which course (partial match OK)",
+   lesson_number: "optional — which lesson"
+)</code></pre>
+        </li>
+        <li><code>_format_results(...)</code> formats each hit as <code>[Course - Lesson N]\n{chunk}</code> and stores human-readable sources in <code>self.last_sources</code> for the UI.</li>
+        <li><code>ToolManager</code> registers tools, exposes <code>get_tool_definitions()</code>, <code>execute_tool(name, **kwargs)</code>, and <code>get_last_sources()</code> / <code>reset_sources()</code>.</li>
+      </ul>
+
+      <h3>session_manager.py <span class="fileref">— backend/session_manager.py</span></h3>
+      <ul class="tight">
+        <li>Pure in-memory store: <code>Dict[str, List[Message]]</code>, lost on restart.</li>
+        <li><code>create_session()</code> returns IDs like <code>session_1</code>, <code>session_2</code>, …</li>
+        <li>Trims to the last <code>MAX_HISTORY * 2</code> = 4 messages per session.</li>
+        <li><code>get_conversation_history(session_id)</code> returns a formatted transcript injected into the system prompt.</li>
+      </ul>
+
+      <h3>models.py <span class="fileref">— backend/models.py</span></h3>
+      <ul class="tight">
+        <li><code>Lesson</code> — <code>lesson_number: int</code>, <code>title: str</code>, <code>lesson_link: Optional[str]</code>.</li>
+        <li><code>Course</code> — <code>title</code> (also used as unique ID), <code>course_link</code>, <code>instructor</code>, <code>lessons: List[Lesson]</code>.</li>
+        <li><code>CourseChunk</code> — <code>content</code>, <code>course_title</code>, <code>lesson_number</code>, <code>chunk_index</code>.</li>
+      </ul>
+    </section>
+
+    <section id="frontend">
+      <h2>Frontend</h2>
+      <p>Three flat files under <code>frontend/</code>:</p>
+      <ul class="tight">
+        <li><code>index.html</code> — chat layout with sidebar (course stats, suggested questions) and main chat area; pulls in <code>marked</code> from a CDN for markdown rendering.</li>
+        <li><code>script.js</code> — handles input, calls <code>POST /api/query</code> and <code>GET /api/courses</code>, renders messages.</li>
+        <li><code>style.css</code> — styling.</li>
+      </ul>
+      <p>Cache-busting query strings (<code>?v=9</code>) plus aggressive no-cache HTTP headers (set by both meta tags and <code>DevStaticFiles</code>) ensure changes are picked up immediately.</p>
+    </section>
+
+    <section id="flow">
+      <h2>Request flow — what happens on a question</h2>
+
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>User types a question</strong> and hits send. <div class="where">frontend/script.js</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Browser POSTs</strong> <code>{query, session_id?}</code> to the backend. <div class="where">POST /api/query → app.py</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>If no session_id</strong>, the backend creates one via <code>session_manager.create_session()</code>. <div class="where">session_manager.py</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>RAGSystem.query()</strong> pulls past chat history and builds the user prompt. <div class="where">rag_system.py</div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Claude is called</strong> with the <code>search_course_content</code> tool registered (<code>tool_choice=auto</code>). <div class="where">ai_generator.py</div></div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body"><strong>If Claude calls the tool</strong>, the search tool resolves the course name via catalog vector search, builds a filter, queries Chroma for top-5 chunks. <div class="where">search_tools.py + vector_store.py</div></div></div>
+      <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Tool results are sent back</strong> to Claude in a follow-up call (this time without tools) so it can write a final answer. <div class="where">ai_generator._handle_tool_execution</div></div></div>
+      <div class="step"><div class="step-num">8</div><div class="step-body"><strong>Sources collected</strong> from the tool's <code>last_sources</code>, then reset for the next query. <div class="where">search_tools.py</div></div></div>
+      <div class="step"><div class="step-num">9</div><div class="step-body"><strong>Exchange saved</strong> to session history. <div class="where">session_manager.py</div></div></div>
+      <div class="step"><div class="step-num">10</div><div class="step-body"><strong>JSON response</strong> <code>{answer, sources, session_id}</code> returned and rendered in the chat. <div class="where">frontend/script.js</div></div></div>
+    </section>
+
+    <section id="config">
+      <h2>Configuration in one table</h2>
+      <table>
+        <thead><tr><th>Setting</th><th>Value</th><th>Why this value</th></tr></thead>
+        <tbody>
+          <tr><td><code>CHUNK_SIZE</code></td><td>800</td><td>Big enough for context, small enough for precise retrieval</td></tr>
+          <tr><td><code>CHUNK_OVERLAP</code></td><td>100</td><td>Prevents losing context at chunk boundaries</td></tr>
+          <tr><td><code>MAX_RESULTS</code></td><td>5</td><td>Top-5 chunks per tool call</td></tr>
+          <tr><td><code>MAX_HISTORY</code></td><td>2</td><td>Last 2 exchanges (4 messages) — minimal but cheap</td></tr>
+          <tr><td><code>temperature</code></td><td>0</td><td>Deterministic answers</td></tr>
+          <tr><td><code>max_tokens</code></td><td>800</td><td>Forces concise replies</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="endpoints">
+      <h2>API endpoints</h2>
+
+      <h3>POST /api/query</h3>
+      <pre><code>// Request
+{
+  "query": "What is lesson 5 about?",
+  "session_id": "session_1"   // optional
+}
+
+// Response
+{
+  "answer": "Lesson 5 covers …",
+  "sources": ["MCP - Lesson 5", "MCP - Lesson 5"],
+  "session_id": "session_1"
+}</code></pre>
+
+      <h3>GET /api/courses</h3>
+      <pre><code>// Response
+{
+  "total_courses": 4,
+  "course_titles": ["Course A", "Course B", ...]
+}</code></pre>
+
+      <p>Interactive Swagger UI lives at <a href="http://localhost:8000/docs">http://localhost:8000/docs</a> when the server runs.</p>
+    </section>
+
+    <section id="concepts">
+      <h2>Key concepts — beginner cheat sheet</h2>
+
+      <div class="glossary-item">
+        <div class="term">RAG (Retrieval-Augmented Generation)</div>
+        <div class="def">Look up real info from a database first → then ask the AI to answer using that info. Much more accurate than asking the AI from training memory alone.</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">Embedding</div>
+        <div class="def">Turning text into a list of numbers so computers can compare meaning. "puppy" and "young dog" get similar numbers — that's how semantic search works.</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">Vector database</div>
+        <div class="def">A database that finds things by <em>similarity of meaning</em>, not by exact keyword match. This app uses ChromaDB.</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">Chunk</div>
+        <div class="def">A small piece of a document — about 800 characters here. Documents get chopped into chunks so search can return specific relevant passages instead of whole files.</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">Tool use</div>
+        <div class="def">Letting the AI call functions in your code. Claude decides when to call <code>search_course_content()</code> instead of you forcing a search every time.</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">Session</div>
+        <div class="def">One ongoing conversation between user and bot. Sessions let the bot handle follow-ups like "tell me more about that."</div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="term">System prompt</div>
+        <div class="def">Hidden instructions to the AI sent on every call — sets the personality and rules (e.g. "be brief", "only search once per question").</div>
+      </div>
+    </section>
+
+    <section id="notable">
+      <h2>Notable details, gotchas &amp; opinionated choices</h2>
+
+      <div class="callout tip">
+        <strong>✅ Smart:</strong> Tool use means Claude decides whether to search. General-knowledge questions skip the database lookup entirely — faster and cheaper.
+      </div>
+
+      <div class="callout tip">
+        <strong>✅ Smart:</strong> Course titles are unique IDs in both Chroma collections. <code>add_course_folder</code> compares titles and skips re-ingesting courses already in the store.
+      </div>
+
+      <div class="callout tip">
+        <strong>✅ Smart:</strong> First chunk of each lesson is prefixed with <code>"Lesson N content: ..."</code> so embeddings carry lesson context — improves retrieval for lesson-specific questions.
+      </div>
+
+      <div class="callout warn">
+        <strong>⚠️ Limit:</strong> <code>MAX_HISTORY = 2</code> means only the last 2 exchanges (4 messages) survive. Long conversations lose early context.
+      </div>
+
+      <div class="callout warn">
+        <strong>⚠️ Limit:</strong> The system prompt restricts Claude to <strong>one search per question</strong>. Multi-hop questions ("compare lesson 3 of course A with lesson 5 of course B") won't chain searches.
+      </div>
+
+      <div class="callout warn">
+        <strong>⚠️ Limit:</strong> Sessions live in process memory — restart the server and all chat history is lost.
+      </div>
+
+      <div class="callout warn">
+        <strong>🐛 Bug:</strong> <code>get_lesson_link</code> in <code>vector_store.py:267</code> is missing an explicit <code>return None</code> on the exception path. It falls through to implicit <code>None</code> so it technically works, but reads as a bug.
+      </div>
+
+      <div class="callout warn">
+        <strong>⚠️ Limit:</strong> CORS and trusted hosts are wide open (<code>allow_origins=["*"]</code>, <code>allowed_hosts=["*"]</code>) — fine for local dev, not safe for production.
+      </div>
+
+      <div class="callout tip">
+        <strong>💡 Tidbit:</strong> The chunker's first chunk uses <code>"Lesson N content: ..."</code> while the <em>fallback path</em> (last lesson processed) uses <code>"Course {title} Lesson {N} content: ..."</code> — slight inconsistency in chunk prefixing.
+      </div>
+    </section>
+
+    <section id="run">
+      <h2>How to run it</h2>
+      <pre><code># 1. Install dependencies (uses uv)
+uv sync
+
+# 2. Add your Anthropic API key to .env
+ANTHROPIC_API_KEY=your_key_here
+
+# 3. Launch
+./run.sh
+#   or manually:
+cd backend &amp;&amp; uv run uvicorn app:app --reload --port 8000
+
+# 4. Open in browser
+http://localhost:8000           # Chat UI
+http://localhost:8000/docs      # Swagger API docs</code></pre>
+    </section>
+
+    <footer>
+      Two endpoints · Nine Python files · One AI · One vector database
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>
